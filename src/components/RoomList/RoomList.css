@@ -1,0 +1,35 @@
+.RoomList > button {
+  display: block;
+  border: none;
+  border-radius: 50em;
+  margin: 0.4em auto;
+  background: var(--dark-grey);
+  color: var(--lightest-grey);
+  width: 60%;
+}
+
+#add-channel {
+  display: flex;
+  position: relative;
+  background: var(--lightest-grey);
+  color: white;
+  padding: 0;
+  width: 30%;
+  /* font-size: 2em; */
+  height: 2em;
+  box-shadow: var(--box-shadow);
+}
+
+#add-channel > p {
+  position: absolute;
+  top: 1px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 2em;
+  margin: auto;
+}
+
+.RoomList > button:hover {
+  color: var(--hover-grey);
+}

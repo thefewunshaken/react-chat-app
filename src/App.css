@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css?family=Asap:600');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font: 18px / 24px 'Asap', sans-serif;
+  color: white;
+}
+
+/* variables */
+*{
+  --darkest-grey: #000000;
+  --dark-grey: #292F30;
+  --mid-grey: #566068;
+  --light-grey: #758487;
+  --lightest-grey: #879496;
+  --hover-grey: #BFCDD0;
+  --box-shadow: 0.4em 0.4em 0.7em rgba(0, 0, 0, 0.25);
+  --drop-shadow: 0.8em 0 3em rgba(0, 0, 0, 0.4);
+  --top-drop-shadow: 0 -0.5em 3em rgba(0, 0, 0, 0.7);
+}
+
+h2{
+  font-size: 1.5em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.5em;
+}
+
+button:focus {
+  cursor: pointer;
+  outline: 0;
+}
+
+.App {
+  display: grid;
+  grid-template-areas:
+    "roomlist roomlist messagelist messagelist messagelist messagelist"
+    "roomlist roomlist messagelist messagelist messagelist messagelist"
+    "roomlist roomlist messagelist messagelist messagelist messagelist"
+    "roomlist roomlist messagelist messagelist messagelist messagelist"
+    "roomlist roomlist messagelist messagelist messagelist messagelist"
+    "roomlist roomlist sendmessage sendmessage sendmessage sendmessage";
+}
+
+.App > div {
+  padding: 1em 2em;
+}
+
+.RoomList {
+  grid-area: roomlist;
+  position: relative;
+  z-index: 2;
+  padding: 1em;
+  justify-content: center;
+  text-align: center;
+  background: var(--dark-grey);
+  box-shadow: var(--drop-shadow);
+  width: 20vw;
+  height: 100vh;
+}
+
+.MessageList {
+  grid-area: messagelist;
+  background: var(--mid-grey);
+  width: 80vw;
+  height: 90vh;
+}
+
+.SendMessageForm {
+  grid-area: sendmessage;
+  position: relative;
+  z-index: 3;
+  background: var(--light-grey);
+  box-shadow: var(--top-drop-shadow);
+  height: 10vh;
+}
+
+@media screen and (max-width: 1000px) {
+  .RoomList {
+    width: 25vw;
+  }
+  
+  .MessageList {
+    width: 75vw;
+  }
+  
+}
