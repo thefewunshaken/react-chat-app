@@ -1,0 +1,33 @@
+.message-block {
+  display: flex;
+  /* flex-direction: row; */
+  /* word-wrap: break-word; */
+  /* flex-wrap: wrap; */
+  /* background: var(--dark-grey); */
+  padding: 0.5em 1em;
+  /* border-radius: 50em;
+  border-radius: 5em 20em 20em 20em; */
+}
+
+.username-box {
+  background: var(--dark-grey);
+  padding: 0.5em 0.75em;
+  margin-right: 0.5em;
+  border-radius: 0.5em 0.5em 2em 2em;
+  height: 100%;
+}
+
+.message {
+  display: inline-flex;
+  word-wrap: break-word;
+  flex-wrap: wrap;
+  background: var(--dark-grey);
+  padding: 0.5em 1em;
+  border-radius: 50em;
+  border-radius: 5em 20em 20em 20em;
+}
+
+.timestamp {
+  margin: auto 0.5em;
+  color: var(--dark-grey);
+}

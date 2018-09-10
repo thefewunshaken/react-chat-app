@@ -10,12 +10,15 @@
 
 /* variables */
 *{
+  /* colors */
   --darkest-grey: #000000;
   --dark-grey: #292F30;
   --mid-grey: #566068;
   --light-grey: #758487;
   --lightest-grey: #879496;
   --hover-grey: #BFCDD0;
+  --green: #7EFE30;
+  /* shadows */
   --box-shadow: 0.4em 0.4em 0.7em rgba(0, 0, 0, 0.25);
   --drop-shadow: 0.8em 0 3em rgba(0, 0, 0, 0.4);
   --top-drop-shadow: 0 -0.5em 3em rgba(0, 0, 0, 0.7);
@@ -33,6 +36,11 @@ button:focus {
   outline: 0;
 }
 
+textarea:focus {
+  cursor: url('#'), text;
+  outline: 0;
+}
+
 .App {
   display: grid;
   grid-template-areas:
@@ -42,6 +50,7 @@ button:focus {
     "roomlist roomlist messagelist messagelist messagelist messagelist"
     "roomlist roomlist messagelist messagelist messagelist messagelist"
     "roomlist roomlist sendmessage sendmessage sendmessage sendmessage";
+    /* overflow: hidden; */
 }
 
 .App > div {
@@ -57,24 +66,27 @@ button:focus {
   text-align: center;
   background: var(--dark-grey);
   box-shadow: var(--drop-shadow);
-  width: 20vw;
-  height: 100vh;
+  /* width: 20vw; */
+  /* height: 100%; */
 }
 
 .MessageList {
   grid-area: messagelist;
   background: var(--mid-grey);
-  width: 80vw;
+  /* width: 80vw; */
   height: 90vh;
 }
 
-.SendMessageForm {
+div.SendMessageForm {
   grid-area: sendmessage;
+  display: inline-flex;
+  justify-content: flex-start;
   position: relative;
   z-index: 3;
   background: var(--light-grey);
   box-shadow: var(--top-drop-shadow);
   height: 10vh;
+  padding: 0;
 }
 
 @media screen and (max-width: 1000px) {
