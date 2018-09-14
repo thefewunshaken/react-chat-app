@@ -1,12 +1,7 @@
 .message-block {
   display: flex;
-  /* flex-direction: row; */
-  /* word-wrap: break-word; */
-  /* flex-wrap: wrap; */
-  /* background: var(--dark-grey); */
+  flex-wrap: wrap;
   padding: 0.5em 1em;
-  /* border-radius: 50em;
-  border-radius: 5em 20em 20em 20em; */
 }
 
 .username-box {
@@ -21,9 +16,22 @@
   display: inline-flex;
   word-wrap: break-word;
   flex-wrap: wrap;
-  background: var(--dark-grey);
   padding: 0.5em 1em;
   border-radius: 50em;
+  box-shadow: var(--message-shadow);
+}
+
+.sent-message {
+  flex-direction: row-reverse;
+}
+
+.sent-message > .message {
+  background: var(--blue);
+  border-radius: 20em 20em 5em 20em;
+}
+
+.fetched-message > .message {
+  background: var(--dark-grey);
   border-radius: 5em 20em 20em 20em;
 }
 

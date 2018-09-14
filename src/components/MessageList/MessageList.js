@@ -1,18 +1,17 @@
 import React from 'react';
 import Message from '../Message/Message';
-// import './MessageList.css';
 
-const MessageList = ({ messages }) => {
-  return(
+const MessageList = ({ messages, currentUser }) => {
+  return messages ? (
     <div className='MessageList'>
       {messages.map((message, index) => {
         let mydate = new Date(message.createdAt);
         return (
-          <Message key={index} username={message.senderId} text={message.text} timestamp={mydate.toLocaleString()}/>
+          <Message key={index} username={message.senderId} text={message.text} timestamp={mydate.toLocaleString()} currentUser={currentUser}/>
         );
       })}
     </div>
-  );
+  ) : null;
 }
 
 export default MessageList;

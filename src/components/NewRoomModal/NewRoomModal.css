@@ -1,0 +1,47 @@
+.modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1em;
+  padding: 1em;
+  padding-bottom: 0;
+  background: var(--mid-grey);
+  border: 0.15em solid var(--green);
+}
+
+.modal button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.modal * {
+  padding: 0.25em;
+  text-align: center;
+  color: white;
+}
+
+#private-check {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+#private-check > * {
+  align-self: center;
+}
+
+#room-name {
+  border: none;
+  background: var(--light-grey);
+}
+
+#room-name::placeholder {
+  color: var(--mid-grey);
+}
+
+#cancel-button {
+  position: absolute;
+  top: -0.4em;
+  right: -1.5em;
+}

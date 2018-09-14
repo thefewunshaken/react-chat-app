@@ -33,18 +33,3 @@
 #message-text::-webkit-scrollbar {
   width: 0.2em;
 }
-
-#message-text::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 1em rgba(0,0,0,0.3); 
-  border-radius: 10px;
-}
-
-#message-text::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: var(--dark-grey); 
-  visibility: hidden;
-}
-
-#message-text:hover::-webkit-scrollbar-thumb {
-  visibility: visible;
-}

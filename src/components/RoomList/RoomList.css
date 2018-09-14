@@ -1,11 +1,53 @@
-.RoomList > button {
+.RoomList > button, .active-room, .rooms > button {
   display: block;
   border: none;
   border-radius: 50em;
-  margin: 0.4em auto;
+  margin: 0.1em auto;
   background: var(--dark-grey);
   color: var(--lightest-grey);
-  width: 60%;
+  /* width: 60%; */
+  padding: 0.1em 0.5em;
+}
+
+.rooms {
+  display: flex;
+  flex-direction: column;
+  /* background: purple; */
+}
+
+.room:hover {
+  cursor: pointer;
+  color: var(--hover-grey);
+}
+
+.active-room {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: inset 0px -0.15em 0.1em rgba(81, 90, 91, 0.8);
+  color: var(--hover-grey);
+  background: var(--darkest-grey);
+}
+
+.active-room#selected:hover {
+  color: white;
+}
+
+#indicator {
+  position: absolute;
+  margin: auto;
+  left: -1em;
+  background: var(--green);
+  width: 0.3em;
+  height: 0.3em;
+  border-radius: 20em;
+  box-shadow: inset 0px -1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.active-room > button {
+  margin: auto;
+  background: none;
+  border: none;
 }
 
 #add-channel {
@@ -13,11 +55,17 @@
   position: relative;
   background: var(--lightest-grey);
   color: white;
+  margin-top: 1em;
   padding: 0;
   width: 30%;
   /* font-size: 2em; */
   height: 2em;
   box-shadow: var(--box-shadow);
+  cursor: pointer;
+}
+
+#add-channel:hover {
+  background: var(--light-grey);
 }
 
 #add-channel > p {
@@ -28,8 +76,9 @@
   right: 0;
   font-size: 2em;
   margin: auto;
+  cursor: pointer;
 }
 
-.RoomList > button:hover {
-  color: var(--hover-grey);
+#add-channel > p:hover {
+  color: var(--green);
 }

@@ -18,8 +18,10 @@
   --lightest-grey: #879496;
   --hover-grey: #BFCDD0;
   --green: #7EFE30;
+  --blue: #2488D1;
   /* shadows */
   --box-shadow: 0.4em 0.4em 0.7em rgba(0, 0, 0, 0.25);
+  --message-shadow: 0.2em 0.4em 0.5em rgba(0, 0, 0, 0.25);
   --drop-shadow: 0.8em 0 3em rgba(0, 0, 0, 0.4);
   --top-drop-shadow: 0 -0.5em 3em rgba(0, 0, 0, 0.7);
 }
@@ -36,7 +38,7 @@ button:focus {
   outline: 0;
 }
 
-textarea:focus {
+textarea:focus, input:focus {
   cursor: url('#'), text;
   outline: 0;
 }
@@ -68,13 +70,35 @@ textarea:focus {
   box-shadow: var(--drop-shadow);
   /* width: 20vw; */
   /* height: 100%; */
+  overflow-y: auto;
 }
 
 .MessageList {
   grid-area: messagelist;
+  position: relative;
   background: var(--mid-grey);
   /* width: 80vw; */
   height: 90vh;
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 1em rgba(0,0,0,0.3); 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: var(--dark-grey); 
+  visibility: hidden;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  visibility: visible;
 }
 
 div.SendMessageForm {
