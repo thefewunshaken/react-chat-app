@@ -1,0 +1,54 @@
+.sign-in, .register {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--lightest-grey);
+}
+
+.sign-in > main *, .register > main * {
+  padding: 0.25em;
+}
+
+.sign-in button, .register button {
+  border: none;
+  padding: 0.5em 1em;
+  width: 6em; 
+  margin: 0 0.5em;
+  background: var(--green);
+  color: var(--darkest-grey);
+}
+
+.sign-in h1, .register h1 {
+  font-size: 3em;
+  margin-bottom: 0.25em;
+}
+
+.sign-in input, .register input {
+  background: var(--dark-grey);
+  border: none;
+  padding: 0.25em 0.5em;
+  width: 8em;
+  margin: 0.5em;
+  letter-spacing: 1px;
+}
+
+.sign-in legend {
+  font-size: 1.25em;
+  color: var(--darkest-grey);
+}
+
+.sign-in > *, .register > * {
+  margin: 10em auto;
+  text-align: center;
+}
+
+.sign-in > main, .register > main {
+  display: flex;
+  flex-direction: column;
+  background: var(--mid-grey);
+  padding: 2em 1em;
+}
+
+#sign-up, #register {
+  border: none;
+}
