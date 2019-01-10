@@ -25,12 +25,10 @@ import RoomList from './components/RoomList/RoomList';
 import MessageList from './components/MessageList/MessageList';
 import SendMessageForm from './components/SendMessageForm/SendMessageForm';
 
-
 class App extends Component {
-
   constructor() {
-    super()
-    this.state= {
+    super();
+    this.state = {
       // route: 'register',
       route: 'chat',
       messages: [],
@@ -39,9 +37,9 @@ class App extends Component {
       currentRoom: '',
       mostRecentMessage: {},
       isNewRoomModalVisible: false,
-      isSignedIn: false
-    }
-    //allow access to this
+      isSignedIn: false,
+    };
+    // allow access to this
     this.handleFormKeySubmit = this.handleFormKeySubmit.bind(this);
     this.changeActiveRoom = this.changeActiveRoom.bind(this);
     this.addMessages = this.addMessages.bind(this);
@@ -52,50 +50,56 @@ class App extends Component {
   componentDidMount() {
     // connect to chatManager when App mounts
     const chatManager = new ChatManager({
-      instanceLocator: "v1:us1:e715b746-5ea8-4ca9-84d8-3c82b88981d8",
+      instanceLocator: 'v1:us1:e715b746-5ea8-4ca9-84d8-3c82b88981d8',
       // TODO: once server side is made, userId will be currentUser fetched from the db via server
-      userId: "jkcoder",
-      tokenProvider: tokenProvider
+      userId: 'jkcoder',
+      tokenProvider,
     });
 
     chatManager
       .connect()
-        .then(currentUser => {
-          this.setState({currentUser: currentUser});
-          this.setState({userRooms: currentUser.rooms});
-          this.setState({currentRoom: currentUser.rooms[0]});
+      .then((currentUser) => {
+        this.setState({ currentUser });
+        this.setState({ userRooms: currentUser.rooms });
+        this.setState({ currentRoom: currentUser.rooms[0] });
 
-          // maybe make into a fn initializeActiveRoom & check if user has any rooms
-          currentUser.fetchMessages({
-            roomId: this.state.currentRoom.id
-          })
-            .then(messages => this.setState({messages: messages}))
-            .catch(err => console.error(`Error fetching messages: ${err}`))
-          // this.updateRoomSubs();
-          // this.changeActiveRoom();
+        const { currentRoom } = this.state;
+        // maybe make into a fn initializeActiveRoom & check if user has any rooms
+        currentUser.fetchMessages({
+          roomId: currentRoom.id,
         })
-          .catch(error => {
-            console.error(`Error: ${error}`);
-          });
+          .then(messages => this.setState({ messages }))
+          .catch(err => console.error(`Error fetching messages: ${err}`));
+        this.updateRoomSubs();
+        // this.changeActiveRoom();
+      })
+      .catch((error) => {
+        console.error(`Error: ${error}`);
+      });
+  }
+
+  onRouteChange(route) {
+    if (route === 'chat') {
+      this.setState({ isSignedIn: true });
+    }
+    this.setState({ route });
   }
 
   updateRoomSubs() {
+    const { currentUser, currentRoom, route, userRooms } = this.state;
     // subscribe to all rooms joined by currentUser
-    this.state.currentUser.rooms.forEach(room => {
-      this.state.currentUser.subscribeToRoom({
+    currentUser.rooms.forEach((room) => {
+      currentUser.subscribeToRoom({
         // might be an issue later with only seeing messages from a given room
         roomId: room.id,
         hooks: {
           // callback that triggers when a new message is added to the room
-          onNewMessage: message => {
-            // console.log(message);
-            this.setState({mostRecentMessage: message});
-            if(this.state.route === 'chat') {
+          onMessage: (message) => {
+            this.setState({ mostRecentMessage: message });
+            if (route === 'chat') {
               this.handleMsgListScroll();
             }
             this.addMessages(room, message);
-            console.log(`currentRoom: ${this.state.currentRoom.name}`);
-            console.log('userRooms: ', this.state.userRooms);
           } // end of onNewMessage callback
         } // end of hooks
       }); // end of currentUser.subscribeToRoom
@@ -103,21 +107,24 @@ class App extends Component {
   }
 
   sendMessage(e) {
+    const { currentUser, currentRoom, mostRecentMessage } = this.state;
     // if message is not blank
-    if(e.target.value !== '') {
-      console.log(`${this.state.currentUser.name} sent a message`);
-      this.state.currentUser.sendMessage({
+    if (e.target.value !== '') {
+      console.log(`${currentUser.name} sent a message`);
+      this.addMessages(currentRoom, mostRecentMessage);
+      currentUser.sendMessage({
         text: e.target.value,
-        roomId: this.state.currentRoom.id
+        roomId: currentRoom.id
       })
         .catch(err => {
-          console.log(`Error sending message to ${this.state.currentRoom.name}`) //name might not be right property for currentRoom
+          console.log(`Error sending message to ${currentRoom.name}`) // name might not be right property for currentRoom
         });
       // empty textarea after message is sent
       e.target.value = '';      
     }
   }
 
+  // originally had "element" as param
   hasElementScrolledToBottom(element) {
     if (element.scrollHeight - element.scrollTop === element.clientHeight) {
       return true;
@@ -126,6 +133,7 @@ class App extends Component {
   }
     
   handleMsgListScroll() {
+    const { currentUser, mostRecentMessage } = this.state;
     const msgList = document.querySelector('.MessageList');
 
     // Helper function.
@@ -149,24 +157,25 @@ class App extends Component {
         let position = easeInOut(elapsedTime, start, change, duration);
         msgList.scrollTop = position;
         if (elapsedTime < duration) {
-          setTimeout(function() {
+          setTimeout(() => {
             animate(elapsedTime);
-          }, increment)
+          }, increment);
         }
       }
       animate(0);
     }
 
-    const scrollToBottom = () => {  
+    const scrollToBottom = () => {
       // how many milliseconds to scroll
-      let duration = 300;
+      const duration = 300;
       animateScroll(duration, msgList);
     }
 
     // scrollToBottom if the message is being sent by currentUser
     // or if the scrollbar is already at the bottom
-    if( (this.state.mostRecentMessage.senderId === this.state.currentUser.name) ||
-      (this.hasElementScrolledToBottom(msgList)) ) {
+    if( (mostRecentMessage.senderId === currentUser.name)
+      // (this.hasElementScrolledToBottom(msgList)) ) {
+    || (this.hasElementScrolledToBottom(msgList))) {
         scrollToBottom();
     }
     // was trying to get too fancy and overcomplicate what was a simple solution
@@ -198,21 +207,21 @@ class App extends Component {
         const stringArg = stringArr[1];
         // command === 'add' ? this.addUser(user) : command === 'remove' ? this.removeUser(user) : null;
         // options for \command
-        switch(command) {
+        switch (command) {
           case 'add':
-          this.addUser(stringArg);
-          break;
+            this.addUser(stringArg);
+            break;
           case 'remove':
-          this.removeUser(stringArg);
-          break;
+            this.removeUser(stringArg);
+            break;
           case 'delete':
-          this.deleteRoom(stringArg);
-          break;
+            this.deleteRoom(stringArg);
+            break;
           default:
-          return;
+            return;
         }
         // empty message
-        e.target.value='';
+        e.target.value = '';
       } else {
         this.sendMessage(e);
       }
@@ -314,39 +323,39 @@ class App extends Component {
       .catch(err => this.handleErrs(err));
   }
 
-  onRouteChange(route) {
-    if (route === 'chat') {
-      this.setState({isSignedIn: true});
-    }
-    this.setState({route: route});
-  }
-  
   render() {
     const { route, userRooms, currentRoom, messages, currentUser } = this.state;
-    return (
-      <div>
-        { route === 'chat'
-          ? <div className='App'>
-              <RoomList
-                userRooms={userRooms}
-                changeActiveRoom={this.changeActiveRoom}
-                currentRoom={currentRoom}
-                createNewRoom={this.createNewRoom}
-              />
-              <MessageList
-                messages={messages}
-                currentUser={currentUser}
-              />
-              <SendMessageForm handleFormKeySubmit={this.handleFormKeySubmit} />
-            </div>
-          : (
-            route === 'signin'
-            ? <SignIn onRouteChange={this.onRouteChange} />
-            : <Register onRouteChange={this.onRouteChange} />
-          )
-        }
-      </div>
-    );
+
+    if (route === 'chat') {
+      return (
+        <div className="App">
+          <RoomList
+            userRooms={userRooms}
+            changeActiveRoom={this.changeActiveRoom}
+            currentRoom={currentRoom}
+            createNewRoom={this.createNewRoom}
+          />
+          <MessageList
+            messages={messages}
+            currentUser={currentUser}
+          />
+          <SendMessageForm handleFormKeySubmit={this.handleFormKeySubmit} />
+        </div>
+      );
+    } else if (route === 'signin') {
+        return (
+          <div>
+            <SignIn onRouteChange={this.onRouteChange} />
+          </div>
+        );
+      } else if (route === 'register') {
+        return (
+          <div>
+            <Register onRouteChange={this.onRouteChange} />
+          </div>
+          );
+      }
+
   }
 }
 

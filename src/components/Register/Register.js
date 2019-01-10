@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../SignIn/SignIn.css';
 
-class Register extends Component {
+export default class Register extends Component {
   constructor() {
     super();
     this.state = {
@@ -96,5 +96,3 @@ class Register extends Component {
     );
   }
 }
-
-export default Register;
