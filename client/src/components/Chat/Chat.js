@@ -1,94 +1,94 @@
-// ==> Notes for improvement
-//  ✔ differentiate between fetched messages and sent messages
-//  ✔ scroll chat to bottom if sending a message or if scrollbar
-//    is already at the bottom
-//  ✖ Remember scroll location in the previous room
-//  ✖ Begin scrollbar at the bottom
-//  ✖ visual notification for a new fetchedMessage in a room
-//  ✖ look into cookies, saving login info locally to user's computer
-// ==> Tasks
-// ✔ finish front-end functionality for chatting
-//    • indicate current Room
-//    • change Rooms
-//    • create Room
-//    • add/remove users to a Room
-// ✖ block chat behind a login wall
-// ✖ create login system
+/**
+ * TODO: Add a search rooms modal that prints a list
+ * of all joinable rooms (not private)
+ * Click to join a room from the list
+ */
 
 import React, { Component } from 'react';
+import './Chat.css';
 import { ChatManager } from '@pusher/chatkit-client';
-import { tokenProvider } from './config';
-import './App.css';
-import SignIn from './components/SignIn/SignIn';
-import Register from './components/Register/Register';
-import RoomList from './components/RoomList/RoomList';
-import MessageList from './components/MessageList/MessageList';
-import SendMessageForm from './components/SendMessageForm/SendMessageForm';
+import { tokenProvider } from '../../config';
+import RoomList from '../RoomList/RoomList';
+import MessageList from '../MessageList/MessageList';
+import SendMessageForm from '../SendMessageForm/SendMessageForm';
 
-class App extends Component {
+export default class Chat extends Component {
   constructor() {
     super();
     this.state = {
-      // route: 'register',
-      route: 'chat',
       messages: [],
       userRooms: [],
       currentUser: '',
       currentRoom: '',
       mostRecentMessage: {},
-      isNewRoomModalVisible: false,
-      isSignedIn: false,
+      searchResults: '',
+      // isNewRoomModalVisible: false,
     };
-    // allow access to this
+
+    this.findJoinableRooms = this.findJoinableRooms.bind(this);
+    this.joinRoom = this.joinRoom.bind(this);
+    this.loadChatkitUser = this.loadChatkitUser.bind(this);
     this.handleFormKeySubmit = this.handleFormKeySubmit.bind(this);
     this.changeActiveRoom = this.changeActiveRoom.bind(this);
     this.addMessages = this.addMessages.bind(this);
     this.createNewRoom = this.createNewRoom.bind(this);
-    this.updateRoomSubs = this.updateRoomSubs.bind(this);
+    this.updateRoomSubscriptions = this.updateRoomSubscriptions.bind(this);
   }
 
   componentDidMount() {
-    // connect to chatManager when App mounts
-    const chatManager = new ChatManager({
-      instanceLocator: 'v1:us1:e715b746-5ea8-4ca9-84d8-3c82b88981d8',
-      // TODO: once server side is made, userId will be currentUser fetched from the db via server
-      userId: 'jkcoder',
-      tokenProvider,
-    });
+    this.loadChatkitUser();
+  }
 
-    chatManager
-      .connect()
-      .then((currentUser) => {
-        this.setState({ currentUser });
-        this.setState({ userRooms: currentUser.rooms });
-        this.setState({ currentRoom: currentUser.rooms[0] });
-
-        const { currentRoom } = this.state;
-        // maybe make into a fn initializeActiveRoom & check if user has any rooms
-        currentUser.fetchMessages({
-          roomId: currentRoom.id,
-        })
-          .then(messages => this.setState({ messages }))
-          .catch(err => console.error(`Error fetching messages: ${err}`));
-        this.updateRoomSubs();
-        // this.changeActiveRoom();
-      })
-      .catch((error) => {
-        console.error(`Error: ${error}`);
+  loadChatkitUser() {
+    const { userId, isSignedIn } = this.props;
+    console.log(userId, isSignedIn);
+    // connect to chatManager when signed in
+    if (isSignedIn) {
+      console.log('Loading chat manager');
+      const chatManager = new ChatManager({
+        instanceLocator: 'v1:us1:e715b746-5ea8-4ca9-84d8-3c82b88981d8',
+        // TODO: once server side is made, userId will be currentUser fetched from the db via server
+        // userId: 'jkcoder',
+        userId,
+        tokenProvider,
       });
-  }
 
-  onRouteChange(route) {
-    if (route === 'chat') {
-      this.setState({ isSignedIn: true });
+      chatManager
+        .connect()
+        .then((currentUser) => {
+          console.log(currentUser);
+          this.setState({ currentUser });
+          this.setState({ userRooms: currentUser.rooms });
+          if (!currentUser.rooms.length) {
+            console.log('You have not joined any rooms.');
+            /**
+             * TO DO: add functionality
+             * if user has joined no rooms
+             */
+          } else {
+            this.setState({ currentRoom: currentUser.rooms[0] });
+            // maybe make into a fn initializeActiveRoom & check if user has any rooms
+            currentUser.fetchMessages({
+              roomId: currentUser.rooms[0].id,
+            })
+              .then(messages => this.setState({ messages }))
+              .catch(err => console.error(`Error fetching messages: ${err}`));
+            this.updateRoomSubscriptions();
+          }
+          // this.changeActiveRoom();
+        })
+        .catch((error) => {
+          console.error(`Error: ${error}`);
+        });
     }
-    this.setState({ route });
   }
 
-  updateRoomSubs() {
-    const { currentUser, currentRoom, route, userRooms } = this.state;
+  updateRoomSubscriptions() {
+    const { currentUser, currentRoom, userRooms } = this.state;
+    this.setState({ userRooms: currentUser.rooms });
     // subscribe to all rooms joined by currentUser
-    currentUser.rooms.forEach((room) => {
+    userRooms.forEach((room) => {
+    // currentUser.rooms.forEach((room) => {
       currentUser.subscribeToRoom({
         // might be an issue later with only seeing messages from a given room
         roomId: room.id,
@@ -96,9 +96,7 @@ class App extends Component {
           // callback that triggers when a new message is added to the room
           onMessage: (message) => {
             this.setState({ mostRecentMessage: message });
-            if (route === 'chat') {
-              this.handleMsgListScroll();
-            }
+            this.handleMsgListScroll();
             this.addMessages(room, message);
           } // end of onNewMessage callback
         } // end of hooks
@@ -111,16 +109,16 @@ class App extends Component {
     // if message is not blank
     if (e.target.value !== '') {
       console.log(`${currentUser.name} sent a message`);
-      this.addMessages(currentRoom, mostRecentMessage);
+      // this.addMessages(currentRoom, mostRecentMessage);
       currentUser.sendMessage({
         text: e.target.value,
         roomId: currentRoom.id
       })
-        .catch(err => {
+        .catch((err) => {
           console.log(`Error sending message to ${currentRoom.name}`) // name might not be right property for currentRoom
         });
       // empty textarea after message is sent
-      e.target.value = '';      
+      e.target.value = '';
     }
   }
 
@@ -205,7 +203,8 @@ class App extends Component {
         const command = stringArr[0];
         // portion of string after space
         const stringArg = stringArr[1];
-        // command === 'add' ? this.addUser(user) : command === 'remove' ? this.removeUser(user) : null;
+        const { currentRoom, currentUser } = this.state;
+        const defaultMessage = 'Unrecognized command. Use \\add, \\remove, or \\delete';
         // options for \command
         switch (command) {
           case 'add':
@@ -218,6 +217,11 @@ class App extends Component {
             this.deleteRoom(stringArg);
             break;
           default:
+            currentUser.sendMessage({
+              text: defaultMessage,
+              roomId: currentRoom.id,
+            });
+            // need to empty message form after message is sent
             return;
         }
         // empty message
@@ -270,93 +274,130 @@ class App extends Component {
   }
 
   changeActiveRoom(e) {
-    this.setState({userRooms: this.state.currentUser.rooms});
+    const { currentUser, userRooms } = this.state;
+    this.setState({ userRooms: currentUser.rooms });
     const roomTarget = e.currentTarget.textContent.replace('# ', ''); // room to switch to
-    this.state.userRooms.forEach(room => {
+    userRooms.forEach((room) => {
       if(room.name.toLowerCase() === roomTarget) {
         console.log(`userRooms.room: ${room.name.toLowerCase()}`);
         console.log(`roomTarget: ${roomTarget}`);
         // REMINDER: setting state is asynchronous
-        this.setState({currentRoom: room});
-        //change visible messages to currentRoom messages
-        this.state.currentUser.fetchMessages({
+        this.setState({ currentRoom: room });
+        // change visible messages to currentRoom messages
+        currentUser.fetchMessages({
           // changing value as room instead of currentRoom b/c setting state is asynchronous
-          roomId: room.id
+          roomId: room.id,
         })
-          .then(messages => {
-            this.setState({messages: messages});
+          .then((messages) => {
+            this.setState({ messages });
           })
           .catch(err => this.handleErrs(err));
       }
     });
   }
 
+  getUpdatedUserRooms(room) {
+    const { currentUser, userRooms } = this.state;
+    this.setState({ userRooms: [...userRooms, room] });
+    this.setState({ currentRoom: room });
+    currentUser.fetchMessages({
+      roomId: room.id,
+    })
+      .then((messages) => {
+        this.setState({ messages });
+      });
+    this.updateRoomSubscriptions();
+  }
+
+  findJoinableRooms(e) {
+    const { currentUser } = this.state;
+    // console.log(e.target.value);
+    const userQuery = e.target.value;
+
+    currentUser.getJoinableRooms()
+      .then((rooms) => {
+        const joinableRooms = rooms.filter((room) => {
+          if (userQuery !== '') {
+            return (room.name.toLowerCase().includes(userQuery.toLowerCase()));
+          }
+          return '';
+        });
+        this.setState({ searchResults: joinableRooms });
+      })
+      .catch(err => console.log(`Error getting joinable rooms: ${err}`));
+  }
+
+  joinRoom(e) {
+    const { currentUser } = this.state;
+    const { searchResults } = this.state;
+    const roomTarget = e.target.textContent;
+
+    // find the room with the right name, then grab the id from the resulting object
+    const roomTargetId = searchResults
+      .find(room => room.name === roomTarget)
+      .id;
+
+    currentUser.joinRoom({ roomId: roomTargetId })
+      .then((room) => {
+        console.log(`Joined room with ID: ${room.id}`);
+        this.getUpdatedUserRooms(room);
+      })
+      .catch(err => console.log(`Error joining room ${roomTargetId}: ${err}`));
+
+    // this.updateRoomSubscriptions();
+  }
+
   createNewRoom(roomName, isPrivate) {
-    this.state.currentUser.createRoom({
+    const { currentUser } = this.state;
+    currentUser.createRoom({
       name: roomName,
       private: isPrivate,
     })
-      .then(room => {
-        this.setState({userRooms: [...this.state.userRooms, room]});
+      .then((room) => {
         console.log(`Created new room ${room.name}`);
-        this.setState({currentRoom: room});
-        this.state.currentUser.fetchMessages({
-          roomId: room.id
-        })
-          .then(messages => {
-            this.setState({messages: messages});
-          })
-        this.updateRoomSubs();
+        this.getUpdatedUserRooms(room);
       })
-    .catch(err => console.log(`Error creating room: ${err}`));
+      .catch(err => console.log(`Error creating room: ${err}`));
     // switching to new room room and sending a message after creation
     // causes the new messages to not show up
   }
 
   deleteRoom(stringArg) {
-    const roomToDelete = this.state.userRooms.find(room => room.name === stringArg);
-    this.state.currentUser.deleteRoom({ roomId: roomToDelete.id})
-      .then(() => {
-        console.log(`Deleted room ${this.state.currentRoom.name}`);
-        this.setState({currentRoom: this.state.currentUser.rooms[0]})
-      })
-      .catch(err => this.handleErrs(err));
+    const { userRooms, currentUser, currentRoom } = this.state;
+    const roomToDelete = userRooms.find(room => room.name.toLowerCase() === stringArg);
+    console.log(roomToDelete);
+    if (roomToDelete !== '') {
+      currentUser.deleteRoom({ roomId: roomToDelete.id })
+        .then(() => {
+          console.log(`Deleted room ${currentRoom.name}`);
+          this.setState({ currentRoom: currentUser.rooms[0] });
+        })
+        .catch(err => this.handleErrs(err));
+    }
   }
 
   render() {
-    const { route, userRooms, currentRoom, messages, currentUser } = this.state;
+    const { userRooms, currentRoom, messages, currentUser, searchResults } = this.state;
 
-    if (route === 'chat') {
-      return (
-        <div className="App">
-          <RoomList
-            userRooms={userRooms}
-            changeActiveRoom={this.changeActiveRoom}
-            currentRoom={currentRoom}
-            createNewRoom={this.createNewRoom}
-          />
-          <MessageList
-            messages={messages}
-            currentUser={currentUser}
-          />
-          <SendMessageForm handleFormKeySubmit={this.handleFormKeySubmit} />
-        </div>
-      );
-    } else if (route === 'signin') {
-        return (
-          <div>
-            <SignIn onRouteChange={this.onRouteChange} />
-          </div>
-        );
-      } else if (route === 'register') {
-        return (
-          <div>
-            <Register onRouteChange={this.onRouteChange} />
-          </div>
-          );
-      }
-
+    return(
+      <div className="Chat">
+        <RoomList
+          userRooms={userRooms}
+          changeActiveRoom={this.changeActiveRoom}
+          currentRoom={currentRoom}
+          createNewRoom={this.createNewRoom}
+          currentUser={currentUser}
+          updateRoomSubscriptions={this.updateRoomSubscriptions}
+          findJoinableRooms={this.findJoinableRooms}
+          joinRoom={this.joinRoom}
+          searchResults={searchResults}
+        />
+        <MessageList
+          messages={messages}
+          currentUser={currentUser}
+        />
+        <SendMessageForm handleFormKeySubmit={this.handleFormKeySubmit} />
+      </div>
+    );
   }
 }
-
-export default App;

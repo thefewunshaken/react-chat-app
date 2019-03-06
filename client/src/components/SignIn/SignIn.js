@@ -1,8 +1,12 @@
+/**
+ * Allow press enter (e.which === 13) to trigger clicking sign in
+ */
+
 import React, { Component } from 'react';
 import './SignIn.css';
 
 export default class SignIn extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       signInEmail: '',
@@ -19,26 +23,34 @@ export default class SignIn extends Component {
   }
 
   onSubmitSignIn = () => {
-    fetch('http://localhost:3001/signin', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        email: this.state.signInEmail,
-        password: this.state.signInPassword
+    const { onRouteChange, loadUser } = this.props;
+    const { signInEmail, signInPassword } = this.state;
+      fetch('/signin', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          email: signInEmail,
+          password: signInPassword
+        })
       })
-    })
-      .then(response => response.json())
-      .then(user => {
-        if (user.id) {
-          this.props.loadUser(user);
-          this.props.onRouteChange('home');
-        }
+      .then(res => res.json())
+      .then(response => {
+        // if the response is a user, call onRouteChange, otherwise, log response
+        response.user_name ? onRouteChange('chat', response.user_name)
+        : console.log(response);
+          // loadUser();
       })
       .catch(err => console.log(err.statusCode, 'Failed to sign in', err));
   }
 
   render() {
-    const { onRouteChange } = this.props;
+    const { onRouteChange, debounce } = this.props;
+    // submit signin on press ENTER
+    window.addEventListener('keypress', debounce((e) => {
+      if(e.which === 13) {
+        this.onSubmitSignIn();
+      }      
+    }, 500));
     return(
       <article className='sign-in'>
         <main>
@@ -69,9 +81,9 @@ export default class SignIn extends Component {
                 type="submit"
                 value="Sign in"
               >
-              Sign In
+                Sign In
               </button>
-              <button onClickCapture={() => onRouteChange('register')}>Register</button>
+              <button id="register-btn" onClickCapture={() => onRouteChange('register')}>Register</button>
             </div>
           </div>
         </main>

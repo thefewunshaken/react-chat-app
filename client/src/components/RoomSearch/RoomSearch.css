@@ -1,0 +1,41 @@
+.room-search {
+  position: relative;
+  margin-top: 1.5em;
+  /* padding: 1em; */
+  /* background: red; */
+}
+
+.room-search > input {
+  background: var(--mid-grey);
+  border: none;
+  color: white;
+  padding: 0.25em;
+}
+
+.room-search > input::placeholder {
+  color: var(--dark-grey);
+}
+
+/* flex-container */
+.results {
+  /* position: relative; */
+  display: flex;
+  flex-direction: column;
+  margin-top: 2px;
+  align-items: center;
+  /* background: purple; */
+  list-style: none;
+  /* margin: auto; */
+}
+
+/* flex-items */
+.results > li {
+  width: calc(12em - 6px);
+  border-bottom: 2px solid var(--dark-grey);
+  padding: 0.5em 0;
+  /* color: yellow; */
+}
+
+.results > li:hover {
+  background: var(--mid-grey);
+}

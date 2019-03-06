@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Room from '../Room/Room';
 import './RoomList.css';
 import NewRoomModal from '../NewRoomModal/NewRoomModal';
+import RoomSearch from '../RoomSearch/RoomSearch';
 
 // need to figure out the new room form
 // show new room form on click of + button
@@ -12,6 +13,8 @@ class RoomList extends Component {
     this.state = {
       isModalVisible: false,
     }
+    // this.joinRoom = this.joinRoom.bind(this); // allow access to this.state
+    // this.findJoinableRooms = this.findJoinableRooms.bind(this); //allow access to this.state
     this.renderNewRoomModal = this.renderNewRoomModal.bind(this); //allow access to this.state
     this.handleModalKeyPress = this.handleModalKeyPress.bind(this); //allow access to this.state
   }  
@@ -49,11 +52,12 @@ class RoomList extends Component {
   }
 
   render() {
-    const { userRooms, changeActiveRoom, currentRoom } = this.props;
+    const { userRooms, changeActiveRoom, currentRoom, findJoinableRooms, searchResults, joinRoom } = this.props;
+
     return(
       <div className='RoomList'>
         <h2>Channels</h2>
-        <Room userRooms={userRooms} changeRoom={changeActiveRoom} currentRoom={currentRoom}/>
+        <Room userRooms={userRooms} changeRoom={changeActiveRoom} currentRoom={currentRoom} />
         <button id='add-channel' onClickCapture={this.renderNewRoomModal}>
           <p id='plus-sign'>+</p>
         </button>
@@ -62,6 +66,7 @@ class RoomList extends Component {
           exitNewRoomModal={this.exitNewRoomModal}
           handleModalKeyPress={this.handleModalKeyPress}
         />
+        <RoomSearch findJoinableRooms={findJoinableRooms} searchResults={searchResults} joinRoom={joinRoom}/>
       </div>
     );
   }

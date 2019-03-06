@@ -14,8 +14,12 @@
   padding: 0.5em 1em;
   width: 6em; 
   margin: 0 0.5em;
-  background: var(--green);
+  background: white;
   color: var(--darkest-grey);
+}
+
+#register-btn {
+  background: var(--green);
 }
 
 .sign-in h1, .register h1 {

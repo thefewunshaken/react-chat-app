@@ -1,49 +1,6 @@
-@import url('https://fonts.googleapis.com/css?family=Asap:600');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font: 18px / 24px 'Asap', sans-serif;
-  color: white;
-}
 
-/* variables */
-*{
-  /* colors */
-  --darkest-grey: #000000;
-  --dark-grey: #292F30;
-  --mid-grey: #566068;
-  --light-grey: #758487;
-  --lightest-grey: #879496;
-  --hover-grey: #BFCDD0;
-  --green: #7EFE30;
-  --blue: #2488D1;
-  /* shadows */
-  --box-shadow: 0.4em 0.4em 0.7em rgba(0, 0, 0, 0.25);
-  --message-shadow: 0.2em 0.4em 0.5em rgba(0, 0, 0, 0.25);
-  --drop-shadow: 0.8em 0 3em rgba(0, 0, 0, 0.4);
-  --top-drop-shadow: 0 -0.5em 3em rgba(0, 0, 0, 0.7);
-}
-
-h2{
-  font-size: 1.5em;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.5em;
-}
-
-button:focus {
-  cursor: pointer;
-  outline: 0;
-}
-
-textarea:focus, input:focus {
-  cursor: url('#'), text;
-  outline: 0;
-}
-
-.App {
+.Chat {
   display: grid;
   grid-template-areas:
     "roomlist roomlist messagelist messagelist messagelist messagelist"
@@ -55,7 +12,7 @@ textarea:focus, input:focus {
     /* overflow: hidden; */
 }
 
-.App > div {
+.Chat > div {
   padding: 1em 2em;
 }
 
