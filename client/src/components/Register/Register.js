@@ -60,11 +60,11 @@ export default class Register extends Component {
   render() {
     const { onRouteChange, debounce } = this.props;
 
-    window.addEventListener('keypress', debounce((e) => {
-      if(e.which === 13) {
-        this.onSubmitRegister();
-      }      
-    }, 500));
+    // window.addEventListener('keypress', debounce((e) => {
+    //   if(e.which === 13) {
+    //     this.onSubmitRegister();
+    //   }      
+    // }, 500));
 
     return(
       <article className='register'>

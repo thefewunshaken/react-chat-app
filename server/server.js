@@ -1,3 +1,6 @@
+// read .env file
+require('dotenv').config();
+
 // controllers
 const signIn = require('./controllers/signIn');
 const register = require('./controllers/register');
@@ -21,7 +24,7 @@ const knex = require('knex');
 const Chatkit = require('@pusher/chatkit-server');
 const chatkit = new Chatkit.default({
   instanceLocator: 'v1:us1:e715b746-5ea8-4ca9-84d8-3c82b88981d8',
-  key: '98795e0e-c153-4f15-9a79-a0853d1d3fad:p0BeK8EiZbcmyh7tYoENI8ZhO9LjrpUfpNsr4X1X91o='
+  key: process.env.CK_KEY
 });
 
 // for testing only
@@ -81,19 +84,12 @@ CREATE TABLE RCA_OWNER.message_history (
 
 const database = knex({
   client: 'pg',
-  connection: {
-    // host : 'localhost',
-    host : '104.248.188.201', // for local dev
-    user : 'rca_ui',
-    password : 'RCA_UIx',
-    database : 'rca'
-  },
+  connection: process.env.PG_CONNECTION_STRING,
   searchPath: ['rca_owner', 'public'],
   // debug: true,
 });
 
 app.use(bodyParser.json());
-app.use(express.static(path.resolve(__dirname, '..', 'client/public')));
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -111,22 +107,15 @@ if(process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'client/build/index.html'))
   });
-}
+} else {
+    app.use(express.static(path.resolve(__dirname, '..', 'client/public')));
+    app.get('*', (req, res) => {
+      res.sendFile(path.normalize('C:\\Users\\kimbl\\Desktop\\react-chat-app\\client\\public\\index.html'));
+    });
+  }
 
-app.get('*', (req, res) => {
-  res.sendFile(path.normalize('C:\\Users\\kimbl\\Desktop\\react-chat-app\\client\\public\\index.html'));
-});
-// app.get('/', (req, res) => {
-  
-//   res.send('root route');
-// });
 app.post('/signin', cors(), jsonParser, (req, res, next) => { signIn.handleSignIn(req,res,database,bcrypt) });
 app.post('/register', cors(), jsonParser, (req, res, next) => { register.handleRegister(req, res, database, bcrypt, chatkit) });
 
 
 app.listen(port, () => console.log(`Listening on port ${port}...`));
-
-// ~~~endpoints
-// /signin
-// /register --> create chatKit user
-// /signout

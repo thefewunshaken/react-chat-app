@@ -45,12 +45,12 @@ export default class SignIn extends Component {
 
   render() {
     const { onRouteChange, debounce } = this.props;
-    // submit signin on press ENTER
-    window.addEventListener('keypress', debounce((e) => {
-      if(e.which === 13) {
-        this.onSubmitSignIn();
-      }      
-    }, 500));
+    // window.addEventListener('keypress', debounce((e) => {
+    //   if(e.which === 13) {
+    //     this.onSubmitSignIn();
+    //   }      
+    // }, 500));
+
     return(
       <article className='sign-in'>
         <main>
