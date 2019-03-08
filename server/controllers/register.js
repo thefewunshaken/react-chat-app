@@ -48,28 +48,27 @@ const handleRegister = (req, res, database, bcrypt, chatkit) => {
   const commitNewUser = userCreated => {
     if(userCreated) {
       const pwdHash = bcrypt.hashSync(password);
-      const newProposedLogin = {
-        user_email_address: email,
-        password_hash: pwdHash
+      const newProposedUser = {
+        user_name: username,
+        first_name: firstName,
+        last_name: lastName,
+        email_address: email,
+        joined: new Date()
       };
       // db insert newLogin into login
       database.transaction(trx => {
-        trx.insert(newProposedLogin)
-        .into('login')
-        // .returning('user_email_address')
-        .then(() => {
-          const newProposedUser = {
-            user_name: username,
-            first_name: firstName,
-            last_name: lastName,
-            email_address: email,
-            joined: new Date()
+        trx.insert(newProposedUser)
+        .into('users')
+        .returning('*')
+        .then(user => {
+          res.json(user[0]);
+          const newProposedLogin = {
+            user_email_address: email,
+            password_hash: pwdHash
           };
           // db insert newUser into users
-          return trx.insert(newProposedUser)
-            .into('users')
-            .returning('*')
-            .then(user => res.json(user[0]))
+          return trx.insert(newProposedLogin)
+            .into('login')
         })
         .then(trx.commit)
         .catch(trx.rollback);
